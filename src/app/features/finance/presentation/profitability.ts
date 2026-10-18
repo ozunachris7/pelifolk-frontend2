@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -8,7 +9,6 @@ import { LucideAngularModule, Eye, Pencil } from 'lucide-angular';
 import { Session } from '../../../core/auth/session';
 import { API_URL } from '../../../core/http/api-url';
 import { apiError } from '../../../core/http/api-error';
-import { Modal } from '../../../shared/ui/modal/modal';
 import { AllocationEditor } from './allocation-editor';
 import { MoneyRecord } from '../domain/finance';
 import { ProfitAnimalSelect, ProfitAnimal } from './profit-animal-select';
@@ -86,12 +86,12 @@ type Section = 'incomes' | 'expenses' | 'feeding' | 'medicines';
 @Component({
   selector: 'app-profitability',
   imports: [
+    DetailPage,
     CurrencyPipe,
     DatePipe,
     ReactiveFormsModule,
     RouterLink,
     LucideAngularModule,
-    Modal,
     AllocationEditor,
     ProfitAnimalSelect,
   ],
@@ -121,12 +121,18 @@ export class Profitability implements OnInit, OnDestroy {
     date_to: '',
   });
   protected readonly animalPending = signal(false);
-  protected chooseAnimal(a: ProfitAnimal | null) { this.form.controls.animal_id.setValue(a?.id || ''); }
+  protected chooseAnimal(a: ProfitAnimal | null) {
+    this.form.controls.animal_id.setValue(a?.id || '');
+  }
   protected readonly noActivity = computed(() => {
     const p = this.page();
-    return !!p && p.total > 0 && (p.activity
-      ? p.activity.income_count === 0 && p.activity.expense_count === 0
-      : p.total === p.items.length && p.items.every(r => !r.income_count && !r.expense_count));
+    return (
+      !!p &&
+      p.total > 0 &&
+      (p.activity
+        ? p.activity.income_count === 0 && p.activity.expense_count === 0
+        : p.total === p.items.length && p.items.every((r) => !r.income_count && !r.expense_count))
+    );
   });
   private applied = this.form.getRawValue();
   protected readonly view = signal<'animals' | 'expenses' | 'incomes'>('animals');

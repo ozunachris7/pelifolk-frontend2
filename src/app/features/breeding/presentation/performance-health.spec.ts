@@ -109,7 +109,7 @@ describe('Health summary within reproductive performance', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('dialog')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('Casos sanitarios: 2');
     h.expectNone((r) => r.url.includes('health-cases'));

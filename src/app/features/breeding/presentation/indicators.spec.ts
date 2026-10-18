@@ -136,7 +136,7 @@ describe('Recorded reproductive indicators', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('dialog')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('El parto anterior queda fuera del periodo');
   });
@@ -154,11 +154,11 @@ describe('Recorded reproductive indicators', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('dialog');
+        return f.nativeElement.querySelector('app-detail-page, dialog');
       })
       .not.toBeNull();
     const buttons = Array.from(
-      f.nativeElement.querySelectorAll('dialog button'),
+      f.nativeElement.querySelectorAll('app-detail-page button, dialog button'),
     ) as HTMLButtonElement[];
     buttons.find((b) => b.textContent?.includes('Crías por edad'))!.click();
     f.detectChanges();
@@ -176,10 +176,12 @@ describe('Recorded reproductive indicators', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('dialog')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('seguimiento incompleto');
-    expect(f.nativeElement.querySelector('dialog').textContent).toContain('Fuera del cálculo');
+    expect(f.nativeElement.querySelector('app-detail-page, dialog').textContent).toContain(
+      'Fuera del cálculo',
+    );
   });
   it('ignores late detail responses after changing sections', async () => {
     const { f, h } = open();
@@ -193,7 +195,7 @@ describe('Recorded reproductive indicators', () => {
     f.detectChanges();
     const old = h.expectOne((r) => r.url.endsWith('/m1/details'));
     const buttons = Array.from(
-      f.nativeElement.querySelectorAll('dialog button'),
+      f.nativeElement.querySelectorAll('app-detail-page button, dialog button'),
     ) as HTMLButtonElement[];
     buttons.find((b) => b.textContent?.includes('Montas y diagnósticos'))!.click();
     f.detectChanges();
@@ -211,10 +213,12 @@ describe('Recorded reproductive indicators', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('dialog')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('Sin diagnóstico vinculado');
-    expect(f.nativeElement.querySelector('dialog').textContent).not.toContain('9999');
+    expect(f.nativeElement.querySelector('app-detail-page, dialog').textContent).not.toContain(
+      '9999',
+    );
   });
   it('rejects invalid cutoff and age without requesting new results', () => {
     const { f, h } = open();

@@ -124,7 +124,7 @@ describe('Upcoming births', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('app-modal')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, app-modal')?.textContent;
       })
       .toContain('Luna');
   });

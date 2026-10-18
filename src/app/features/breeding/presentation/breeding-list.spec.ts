@@ -322,7 +322,7 @@ describe('Reproduction', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return element(f).querySelector('dialog')?.textContent;
+        return element(f).querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('Crías registradas');
   });

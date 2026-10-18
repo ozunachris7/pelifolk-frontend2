@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { LucideAngularModule, Baby, ChartNoAxesCombined, ClipboardList } from 'lucide-angular';
 import { OffspringHealth } from './offspring-health';
 import { ChildHealthCounts, ParentHealthCounts } from '../domain/offspring-health';
@@ -10,7 +11,6 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { API_URL } from '../../../core/http/api-url';
 import { apiError } from '../../../core/http/api-error';
 import { Session } from '../../../core/auth/session';
-import { Modal } from '../../../shared/ui/modal/modal';
 import { Animal, animalLabel } from '../domain/breeding';
 import { exitLabel } from '../../exits/domain/exits';
 interface Metric {
@@ -69,13 +69,13 @@ interface Children {
 @Component({
   selector: 'app-performance',
   imports: [
+    DetailPage,
     LucideAngularModule,
     OffspringHealth,
     DatePipe,
     DecimalPipe,
     ReactiveFormsModule,
     RouterLink,
-    Modal,
   ],
   templateUrl: './performance.html',
 })

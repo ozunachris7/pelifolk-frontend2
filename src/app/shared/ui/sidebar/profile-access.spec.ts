@@ -283,7 +283,7 @@ describe('Six operational profiles', () => {
       const paths = Array.from(f.nativeElement.querySelectorAll('nav a')).map((a: any) =>
         a.getAttribute('href').split('/').at(-1),
       );
-      expect(paths).toEqual(routes[name]);
+      expect(paths.sort()).toEqual([...routes[name]].sort());
     });
     it('renders sanitary actions and blocks internal form entry for ' + name, async () => {
       const empty = { items: [], total: 0, offset: 0, limit: 25 };

@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
@@ -27,7 +28,15 @@ function today() {
 }
 @Component({
   selector: 'app-incident-list',
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, LucideAngularModule, HealthNav, Modal],
+  imports: [
+    DetailPage,
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    LucideAngularModule,
+    HealthNav,
+    Modal,
+  ],
   providers: [HealthRepository],
   templateUrl: './incident-list.html',
 })

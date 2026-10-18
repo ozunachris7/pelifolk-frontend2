@@ -162,7 +162,7 @@ describe('Health management', () => {
     fill(f, 'health-date', '2024-01-02');
     fill(f, 'health-text', '  Camina con dificultad  ');
     element(f)
-      .querySelector('dialog form')!
+      .querySelector('app-detail-page form, dialog form')!
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     f.detectChanges();
     const req = http.expectOne(`${api}/health/observations`);
@@ -204,7 +204,9 @@ describe('Health management', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return element(f).querySelector('dialog')?.textContent?.includes('Camina con dificultad');
+        return element(f)
+          .querySelector('app-detail-page, dialog')
+          ?.textContent?.includes('Camina con dificultad');
       })
       .toBe(true);
   });
@@ -222,14 +224,14 @@ describe('Health management', () => {
     fill(f, 'health-status', 'closed');
     fill(f, 'health-closed-date', '2023-12-31');
     element(f)
-      .querySelector('dialog form')!
+      .querySelector('app-detail-page form, dialog form')!
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     f.detectChanges();
     http.expectNone((r) => r.method === 'PATCH');
     expect(element(f).textContent).toContain('El cierre debe estar');
     fill(f, 'health-closed-date', '2024-01-03');
     element(f)
-      .querySelector('dialog form')!
+      .querySelector('app-detail-page form, dialog form')!
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     f.detectChanges();
     const req = http.expectOne(`${api}/health/cases/${CASE.id}/status`);
@@ -245,7 +247,9 @@ describe('Health management', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return element(f).querySelector('dialog')?.textContent?.includes('El caso cambió');
+        return element(f)
+          .querySelector('app-detail-page, dialog')
+          ?.textContent?.includes('El caso cambió');
       })
       .toBe(true);
   });
@@ -301,12 +305,14 @@ describe('Health management', () => {
       .poll(() => {
         f.detectChanges();
         return element(f)
-          .querySelector('dialog')
+          .querySelector('app-detail-page, dialog')
           ?.textContent?.includes('Inflamación de extremidad');
       })
       .toBe(true);
-    expect(element(f).querySelector('dialog')?.textContent).toContain('Moderada');
-    expect(element(f).querySelector('dialog')?.textContent).toContain('Cris Ozuna');
+    expect(element(f).querySelector('app-detail-page, dialog')?.textContent).toContain('Moderada');
+    expect(element(f).querySelector('app-detail-page, dialog')?.textContent).toContain(
+      'Cris Ozuna',
+    );
   });
   it('registers a treatment and refreshes the case to under treatment', async () => {
     await signedIn();
@@ -418,10 +424,14 @@ describe('Health management', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return element(f).querySelector('dialog')?.textContent?.includes('Producto de prueba');
+        return element(f)
+          .querySelector('app-detail-page, dialog')
+          ?.textContent?.includes('Producto de prueba');
       })
       .toBe(true);
-    expect(element(f).querySelector('dialog')?.textContent).toContain('05/01/2024');
+    expect(element(f).querySelector('app-detail-page, dialog')?.textContent).toContain(
+      '05/01/2024',
+    );
   });
   it('opens a linked case from an observation and displays its original author', async () => {
     await signedIn();
@@ -489,5 +499,32 @@ describe('Health management', () => {
       'Hallazgo original.',
     );
     expect(element(f).querySelector('app-observation-case')).toBeNull();
+  });
+  it('opens the case as a page and preserves the list filters when returning', async () => {
+    await signedIn(['health:read']);
+    const f = await fixture();
+    fill(f, 'health-search', 'Luna');
+    click(f, 'button[aria-label^="Ver caso"]');
+    expect(element(f).querySelector('app-detail-page')).not.toBeNull();
+    expect(element(f).querySelector('dialog')).toBeNull();
+    expect(element(f).querySelector('#health-search')).toBeNull();
+    http.expectOne(`${api}/health/cases/${CASE.id}`).flush({
+      case: CASE,
+      diagnoses: [],
+      treatments: [],
+      activity: [],
+      observations: [],
+    });
+    await expect
+      .poll(() => {
+        f.detectChanges();
+        return element(f).querySelector('app-detail-page')?.textContent;
+      })
+      .toContain('Cojera');
+    click(f, 'app-detail-page header button');
+    expect(element(f).querySelector('app-detail-page')).toBeNull();
+    expect(element(f).querySelector<HTMLInputElement>('#health-search')?.value).toBe('Luna');
+    expect(element(f).querySelector('[data-case-id]')).not.toBeNull();
+    http.expectNone((r) => r.url === `${api}/health/cases`);
   });
 });

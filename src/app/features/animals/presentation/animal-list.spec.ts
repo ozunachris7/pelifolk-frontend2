@@ -192,7 +192,7 @@ describe('Animal management', () => {
     });
     await f.whenStable();
     f.detectChanges();
-    expect(element(f).querySelector('app-modal')).toBeNull();
+    expect(element(f).querySelector('app-detail-page, app-modal')).toBeNull();
     expect(element(f).textContent).toContain('Animal registrado.');
   });
   it('prevents invalid breed totals and saves a valid edit preserving parent fields', async () => {
@@ -300,7 +300,9 @@ describe('Animal management', () => {
     http
       .expectOne((r) => r.url === `${api}/animals/${ANIMAL.id}/decisions`)
       .flush({ items: [], total: 0, offset: 0, limit: 25 });
-    expect(element(f).querySelector('app-modal')?.textContent).toContain('Pelibuey');
+    expect(element(f).querySelector('app-detail-page, app-modal')?.textContent).toContain(
+      'Pelibuey',
+    );
   });
   it('does not request protected data without read permission', async () => {
     await login([]);
@@ -322,7 +324,7 @@ describe('Animal management', () => {
       .flush({ detail: 'SINIIGA already exists' }, { status: 409, statusText: 'Conflict' });
     await f.whenStable();
     f.detectChanges();
-    expect(element(f).querySelector('app-modal')?.textContent).toContain(
+    expect(element(f).querySelector('app-detail-page, app-modal')?.textContent).toContain(
       'Ya existe un animal con ese SINIIGA.',
     );
     expect(

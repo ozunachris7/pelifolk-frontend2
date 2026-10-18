@@ -85,6 +85,12 @@ export const dashboardRoutes: Routes = [
         loadComponent: () => import('../weaning/weaning-list').then((m) => m.WeaningList),
       },
       {
+        path: 'management/comparison',
+        title: 'Comparar pesos | Pelifolk',
+        providers: [WeightRepository],
+        loadComponent: () => import('../weights/presentation/weight-comparison').then(m => m.WeightComparison),
+      },
+      {
         path: 'management',
         title: 'Pesajes | Pelifolk',
         providers: [WeightRepository],

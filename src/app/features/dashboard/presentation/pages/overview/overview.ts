@@ -1,3 +1,9 @@
+import { HealthTrend } from './health-trend';
+import { FeedingTrend } from './feeding-trend';
+import { BreedingTrend } from './breeding-trend';
+import { HealthDistribution } from './health-distribution';
+import { HerdDistribution } from './herd-distribution';
+import { FinanceTrend } from './finance-trend';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
@@ -23,6 +29,8 @@ export interface RanchSummary {
   health: {
     open_cases: number;
     treatment_cases: number;
+    closed_cases: number;
+    total_cases: number;
     attention_count: number;
     pending: {
       program_id: string;
@@ -53,7 +61,18 @@ export interface RanchSummary {
 }
 @Component({
   selector: 'app-overview',
-  imports: [RouterLink, LucideAngularModule, CurrencyPipe, DatePipe],
+  imports: [
+    BreedingTrend,
+    FeedingTrend,
+    HealthTrend,
+    HealthDistribution,
+    HerdDistribution,
+    FinanceTrend,
+    RouterLink,
+    LucideAngularModule,
+    CurrencyPipe,
+    DatePipe,
+  ],
   templateUrl: './overview.html',
 })
 export class Overview implements OnDestroy {
@@ -63,6 +82,7 @@ export class Overview implements OnDestroy {
   private destroyed = false;
   protected readonly data = signal<RanchSummary | null>(null);
   protected readonly loading = signal(false);
+  protected readonly chartRevision = signal(0);
   protected readonly error = signal('');
   protected readonly sections = computed(() =>
     navigationFor(this.session.user()?.permissions ?? []).filter(
@@ -111,7 +131,10 @@ export class Overview implements OnDestroy {
       const data = await firstValueFrom(
         this.http.get<RanchSummary>(`${this.api}/dashboard/summary`).pipe(timeout(15000)),
       );
-      if (!this.destroyed) this.data.set(data);
+      if (!this.destroyed) {
+        this.data.set(data);
+        this.chartRevision.update((value) => value + 1);
+      }
     } catch (e) {
       if (!this.destroyed) this.error.set(apiError(e, 'No se pudo cargar el resumen del rancho.'));
     } finally {

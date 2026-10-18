@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnDestroy, signal } from '@angular/core';
@@ -8,7 +9,6 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { API_URL } from '../../../core/http/api-url';
 import { apiError } from '../../../core/http/api-error';
 import { Session } from '../../../core/auth/session';
-import { Modal } from '../../../shared/ui/modal/modal';
 import { BreedingRepository } from '../infrastructure/breeding-repository';
 import { Animal, History, animalLabel, kindLabel, resultLabel } from '../domain/breeding';
 interface Upcoming {
@@ -35,7 +35,7 @@ interface Page {
 }
 @Component({
   selector: 'app-upcoming-births',
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, LucideAngularModule, Modal],
+  imports: [DetailPage, DatePipe, ReactiveFormsModule, RouterLink, LucideAngularModule],
   templateUrl: './upcoming-births.html',
 })
 export class UpcomingBirths implements OnDestroy {

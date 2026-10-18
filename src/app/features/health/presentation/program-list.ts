@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { ReactionSummary } from './reaction-summary';
 import { TreatmentDoses } from './treatment-doses';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
@@ -26,6 +27,7 @@ import { HealthNav } from './health-nav';
 @Component({
   selector: 'app-program-list',
   imports: [
+    DetailPage,
     ReactionSummary,
     ReactiveFormsModule,
     DatePipe,
@@ -279,7 +281,6 @@ export class ProgramList implements OnInit, OnDestroy {
   }
   protected async openApplication(notice: ProgramNotice) {
     if (!notice.can_apply || !this.canApply() || this.busy()) return;
-    this.closeSchedule();
     this.selectedAnimal.set(notice);
     this.applicationOpen.set(true);
     this.applicationError.set('');

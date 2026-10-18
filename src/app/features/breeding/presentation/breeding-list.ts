@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { KinshipNotice } from './kinship-notice';
 import { map, distinctUntilChanged } from 'rxjs';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
@@ -24,7 +25,15 @@ import {
 } from '../domain/breeding';
 @Component({
   selector: 'app-breeding-list',
-  imports: [ReactiveFormsModule, DatePipe, LucideAngularModule, Modal, RouterLink, KinshipNotice],
+  imports: [
+    DetailPage,
+    ReactiveFormsModule,
+    DatePipe,
+    LucideAngularModule,
+    Modal,
+    RouterLink,
+    KinshipNotice,
+  ],
   templateUrl: './breeding-list.html',
 })
 export class BreedingList implements OnInit, OnDestroy {
@@ -354,7 +363,6 @@ export class BreedingList implements OnInit, OnDestroy {
     this.historyOpen.set(false);
   }
   protected historyDetail(event: BreedingEvent) {
-    this.closeHistory();
     this.detail.set(event);
   }
 }

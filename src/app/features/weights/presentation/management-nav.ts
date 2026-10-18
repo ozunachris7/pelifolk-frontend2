@@ -21,6 +21,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         ariaCurrentWhenActive="page"
         class="border-b-2 border-transparent py-3"
         >Destetes</a
+      ><a
+        routerLink="/dashboard/management/comparison"
+        routerLinkActive="border-green-800"
+        ariaCurrentWhenActive="page"
+        class="border-b-2 border-transparent py-3"
+        >Comparar pesos</a
       >
     </nav>
   `,

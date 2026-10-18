@@ -199,7 +199,7 @@ describe('Health programs', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return !element(f).querySelector('dialog');
+        return !element(f).querySelector('app-detail-page, dialog');
       })
       .toBe(true);
   });
@@ -280,7 +280,7 @@ describe('Health programs', () => {
       .poll(() => {
         f.detectChanges();
         return element(f)
-          .querySelector('dialog')
+          .querySelector('app-detail-page, dialog')
           ?.textContent?.includes('No hay animales para estos filtros');
       })
       .toBe(true);

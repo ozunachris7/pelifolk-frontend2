@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -7,7 +8,6 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { Session } from '../../../core/auth/session';
 import { API_URL } from '../../../core/http/api-url';
 import { apiError } from '../../../core/http/api-error';
-import { Modal } from '../../../shared/ui/modal/modal';
 import { physicalAnimalLabel } from '../../animals/domain/physical';
 import {
   IndicatorPage,
@@ -23,7 +23,7 @@ function today() {
 }
 @Component({
   selector: 'app-indicators',
-  imports: [DatePipe, DecimalPipe, RouterLink, ReactiveFormsModule, Modal],
+  imports: [DetailPage, DatePipe, DecimalPipe, RouterLink, ReactiveFormsModule],
   templateUrl: './indicators.html',
 })
 export class Indicators implements OnDestroy {

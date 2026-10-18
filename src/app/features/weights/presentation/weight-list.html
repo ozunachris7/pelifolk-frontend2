@@ -235,48 +235,15 @@
     }
     @if (history(); as history) {
       <p class="mb-5 text-lg font-medium">{{ label(history.animal) }}</p>
-      @if (chart(); as chart) {
-        <figure class="mb-6">
-          <svg
-            viewBox="0 0 720 250"
-            class="w-full text-green-800 dark:text-green-300"
-            role="img"
-            aria-label="Evolución del peso en kilogramos. Las mediciones y ganancias se detallan en la tabla.">
-            <title>Evolución del peso de {{ label(history.animal) }}</title>
-            <line x1="64" y1="28" x2="64" y2="206" stroke="currentColor" opacity=".25" />
-            <line x1="64" y1="206" x2="676" y2="206" stroke="currentColor" opacity=".25" />
-            <text x="55" y="34" text-anchor="end" fill="currentColor" font-size="13">
-              {{ chart.max | number: '1.1-1' }}
-            </text>
-            <text x="55" y="209" text-anchor="end" fill="currentColor" font-size="13">
-              {{ chart.min | number: '1.1-1' }}
-            </text>
-            <text x="64" y="237" fill="currentColor" font-size="13">
-              {{ history.items[0].date | date: 'dd/MM/yy' : 'UTC' }}
-            </text>
-            <text x="676" y="237" text-anchor="end" fill="currentColor" font-size="13">
-              {{ history.items[history.items.length - 1].date | date: 'dd/MM/yy' : 'UTC' }}
-            </text>
-            <polyline
-              [attr.points]="chart.path"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3" />
-            @for (point of chart.points; track point.weight.id) {
-              <circle
-                [attr.cx]="point.x"
-                [attr.cy]="point.y"
-                r="5"
-                fill="currentColor"
-                tabindex="0">
-                <title>{{ point.weight.date }}: {{ point.weight.weight_kg }} kg</title>
-              </circle>
-            }
-          </svg>
-          <figcaption class="text-xs text-stone-500">
-            Peso (kg) a lo largo del tiempo. Selecciona un punto para consultar la medición.
-          </figcaption>
-        </figure>
+      @if (history.items.length) {
+        <app-chart
+          class="mb-6 block min-w-0"
+          [model]="graph()"
+          [label]="'Evolución del peso de ' + label(history.animal)" />
+        <p class="mb-5 text-xs leading-5 text-stone-500">
+          Pasa el cursor o toca los puntos para consultar el peso. Las fechas mantienen su
+          separación real; la escala vertical se ajusta a las mediciones.
+        </p>
       }
       <p class="mb-4 text-xs leading-5 text-stone-500">
         La ganancia compara cada medición con la anterior; kg/día es el promedio entre ambas fechas.

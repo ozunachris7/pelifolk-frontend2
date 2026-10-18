@@ -1,190 +1,202 @@
-<div class="mx-auto max-w-6xl">
-  <div class="flex flex-wrap items-end justify-between gap-5 pb-7">
-    <div>
-      <p class="mb-3 text-xs text-stone-500">Mi rancho / Reproducción</p>
-      <h1 class="text-2xl font-medium tracking-tight sm:text-3xl">Reproducción</h1>
-      <p class="mt-3 text-sm text-stone-500">Montas, gestaciones y nacimientos del hato.</p>
-    </div>
-    @if (canWrite()) {
-      <button
-        type="button"
-        data-testid="new-breeding"
-        (click)="openForm()"
-        class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950 inline-flex items-center gap-2">
-        <lucide-icon [img]="plus" [size]="16" />
-        {{
-          kind() === 'birth'
-            ? 'Registrar parto'
-            : kind() === 'mating'
-              ? 'Registrar monta'
-              : 'Registrar diagnóstico'
-        }}
-      </button>
-    }
-  </div>
-  @if (success()) {
-    <p
-      role="status"
-      class="mb-5 rounded-lg bg-green-50 p-4 text-sm text-green-900 dark:bg-green-950/30 dark:text-green-200">
-      {{ success() }}
-    </p>
-  }
-  @if (!canRead()) {
-    <p class="py-10 text-sm text-stone-500">No tienes permiso para consultar Reproducción.</p>
-  } @else {
-    <div class="mb-6 flex flex-wrap gap-5 border-b border-stone-200 text-sm dark:border-white/10">
-      @for (tab of ['mating', 'pregnancy', 'birth']; track tab) {
+@if (!historyOpen()) {
+  <div class="mx-auto max-w-6xl">
+    <div class="flex flex-wrap items-end justify-between gap-5 pb-7">
+      <div>
+        <p class="mb-3 text-xs text-stone-500">Mi rancho / Reproducción</p>
+        <h1 class="text-2xl font-medium tracking-tight sm:text-3xl">Reproducción</h1>
+        <p class="mt-3 text-sm text-stone-500">Montas, gestaciones y nacimientos del hato.</p>
+      </div>
+      @if (canWrite()) {
         <button
           type="button"
-          [attr.data-kind]="tab"
-          (click)="switchKind($any(tab))"
-          [attr.aria-pressed]="kind() === tab"
-          [class.border-green-800]="kind() === tab"
-          class="border-b-2 border-transparent py-3">
-          {{ tab === 'mating' ? 'Montas' : tab === 'pregnancy' ? 'Gestación' : 'Partos y crías' }}
+          data-testid="new-breeding"
+          (click)="openForm()"
+          class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950 inline-flex items-center gap-2">
+          <lucide-icon [img]="plus" [size]="16" />
+          {{
+            kind() === 'birth'
+              ? 'Registrar parto'
+              : kind() === 'mating'
+                ? 'Registrar monta'
+                : 'Registrar diagnóstico'
+          }}
         </button>
       }
-      <a
-        routerLink="/dashboard/breeding/upcoming-births"
-        class="border-b-2 border-transparent py-3 text-stone-500 hover:text-green-800 dark:hover:text-green-300"
-        >Partos próximos</a
-      >
-      <a
-        routerLink="/dashboard/breeding/performance"
-        class="border-b-2 border-transparent py-3 text-stone-500 hover:text-green-800 dark:hover:text-green-300"
-        >Desempeño</a
-      >
-      <a routerLink="/dashboard/breeding/assessments" class="border-b-2 border-transparent py-3 text-sm text-stone-500">Evaluaciones maternas y de crías</a>
-      <a routerLink="/dashboard/breeding/indicators" class="border-b-2 border-transparent py-3 text-sm text-stone-500">Indicadores</a>
     </div>
-    <form (submit)="$event.preventDefault(); load()" class="mb-6 flex max-w-lg items-end gap-3">
-      <div class="min-w-0 flex-1">
-        <label for="breeding-search" class="mb-2 block text-xs">Buscar hembra</label
-        ><input
-          id="breeding-search"
-          type="search"
-          [value]="search()"
-          (input)="search.set($any($event.target).value)"
-          placeholder="Nombre o SINIIGA"
-          class="w-full rounded-lg border border-stone-200 bg-white px-3 py-3 text-sm dark:border-white/15 dark:bg-[#171717]" />
-      </div>
-      <button
-        type="submit"
-        [disabled]="loading()"
-        class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950">
-        Buscar
-      </button>
-    </form>
-    @if (error()) {
-      <p role="alert" class="mb-4 text-sm text-red-600">{{ error() }}</p>
-      <button type="button" (click)="load(page().offset)" class="text-sm underline">
-        Reintentar
-      </button>
+    @if (success()) {
+      <p
+        role="status"
+        class="mb-5 rounded-lg bg-green-50 p-4 text-sm text-green-900 dark:bg-green-950/30 dark:text-green-200">
+        {{ success() }}
+      </p>
     }
-    @if (loading()) {
-      <p role="status" class="py-12 text-sm text-stone-500">Cargando registros…</p>
-    } @else if (!error()) {
-      <div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-white/10">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-stone-50 text-xs text-stone-500 dark:bg-white/5">
-            <tr>
-              <th class="p-4 font-normal">Hembra</th>
-              <th class="p-4 font-normal">Fecha</th>
-              <th class="p-4 font-normal">
-                {{
-                  kind() === 'mating'
-                    ? 'Macho'
-                    : kind() === 'pregnancy'
-                      ? 'Resultado'
-                      : 'Parto / Crías'
-                }}
-              </th>
-              <th class="p-4 font-normal">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (event of page().items; track event.id) {
-              <tr
-                [attr.data-event-id]="event.id"
-                class="border-t border-stone-100 dark:border-white/10">
-                <td class="p-4">
-                  <p class="font-medium">{{ event.animal.name || 'Sin nombre' }}</p>
-                  <p class="mt-1 text-xs text-stone-500">
-                    {{ event.animal.siniiga || 'Sin SINIIGA' }}
-                  </p>
-                </td>
-                <td class="whitespace-nowrap p-4">{{ event.date | date: 'dd/MM/yyyy' : 'UTC' }}</td>
-                <td class="p-4">
-                  @if (event.male) {
-                    {{ label(event.male) }}
-                  }
-                  @if (event.kind === 'mating') {
-                    @if (event.kinship; as check) {
-                      <div class="mt-5">
-                        <app-kinship-notice [value]="check" [historical]="true" />
-                      </div>
-                    } @else {
-                      <p class="mt-5 text-xs text-stone-500">
-                        Esta monta no tiene una comprobación de parentesco guardada.
-                      </p>
-                    }
-                  }
-                  @if (event.result) {
-                    {{ resultLabel(event.result) }}
-                  }
-                  @if (event.birth_type) {
-                    {{ resultLabel(event.birth_type) }} · {{ event.offspring.length }} crías
-                  }
-                </td>
-                <td class="p-4">
-                  <div class="flex items-center gap-2">
-                    <button
-                      type="button"
-                      (click)="detail.set(event)"
-                      [attr.aria-label]="'Ver registro de ' + label(event.animal)"
-                      class="rounded-lg px-3 py-2 text-green-900 hover:bg-stone-100 dark:text-green-300 dark:hover:bg-white/5">
-                      Ver</button
-                    ><button
-                      type="button"
-                      (click)="openHistory(event.animal)"
-                      [attr.aria-label]="'Historial reproductivo de ' + label(event.animal)"
-                      class="rounded-lg p-2 text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5">
-                      <lucide-icon [img]="clock" [size]="18" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="4" class="p-12 text-center text-stone-500">
-                  No hay registros para estos filtros.
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-500">
-        <p>{{ page().total }} registros</p>
-        <div class="flex gap-3">
+    @if (!canRead()) {
+      <p class="py-10 text-sm text-stone-500">No tienes permiso para consultar Reproducción.</p>
+    } @else {
+      <div class="mb-6 flex flex-wrap gap-5 border-b border-stone-200 text-sm dark:border-white/10">
+        @for (tab of ['mating', 'pregnancy', 'birth']; track tab) {
           <button
             type="button"
-            [disabled]="page().offset === 0"
-            (click)="load(page().offset - 25)"
-            class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
-            Anterior</button
-          ><button
-            type="button"
-            [disabled]="page().offset + 25 >= page().total"
-            (click)="load(page().offset + 25)"
-            class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
-            Siguiente
+            [attr.data-kind]="tab"
+            (click)="switchKind($any(tab))"
+            [attr.aria-pressed]="kind() === tab"
+            [class.border-green-800]="kind() === tab"
+            class="border-b-2 border-transparent py-3">
+            {{ tab === 'mating' ? 'Montas' : tab === 'pregnancy' ? 'Gestación' : 'Partos y crías' }}
           </button>
-        </div>
+        }
+        <a
+          routerLink="/dashboard/breeding/upcoming-births"
+          class="border-b-2 border-transparent py-3 text-stone-500 hover:text-green-800 dark:hover:text-green-300"
+          >Partos próximos</a
+        >
+        <a
+          routerLink="/dashboard/breeding/performance"
+          class="border-b-2 border-transparent py-3 text-stone-500 hover:text-green-800 dark:hover:text-green-300"
+          >Desempeño</a
+        >
+        <a
+          routerLink="/dashboard/breeding/assessments"
+          class="border-b-2 border-transparent py-3 text-sm text-stone-500"
+          >Evaluaciones maternas y de crías</a
+        >
+        <a
+          routerLink="/dashboard/breeding/indicators"
+          class="border-b-2 border-transparent py-3 text-sm text-stone-500"
+          >Indicadores</a
+        >
       </div>
+      <form (submit)="$event.preventDefault(); load()" class="mb-6 flex max-w-lg items-end gap-3">
+        <div class="min-w-0 flex-1">
+          <label for="breeding-search" class="mb-2 block text-xs">Buscar hembra</label
+          ><input
+            id="breeding-search"
+            type="search"
+            [value]="search()"
+            (input)="search.set($any($event.target).value)"
+            placeholder="Nombre o SINIIGA"
+            class="w-full rounded-lg border border-stone-200 bg-white px-3 py-3 text-sm dark:border-white/15 dark:bg-[#171717]" />
+        </div>
+        <button
+          type="submit"
+          [disabled]="loading()"
+          class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950">
+          Buscar
+        </button>
+      </form>
+      @if (error()) {
+        <p role="alert" class="mb-4 text-sm text-red-600">{{ error() }}</p>
+        <button type="button" (click)="load(page().offset)" class="text-sm underline">
+          Reintentar
+        </button>
+      }
+      @if (loading()) {
+        <p role="status" class="py-12 text-sm text-stone-500">Cargando registros…</p>
+      } @else if (!error()) {
+        <div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-white/10">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-stone-50 text-xs text-stone-500 dark:bg-white/5">
+              <tr>
+                <th class="p-4 font-normal">Hembra</th>
+                <th class="p-4 font-normal">Fecha</th>
+                <th class="p-4 font-normal">
+                  {{
+                    kind() === 'mating'
+                      ? 'Macho'
+                      : kind() === 'pregnancy'
+                        ? 'Resultado'
+                        : 'Parto / Crías'
+                  }}
+                </th>
+                <th class="p-4 font-normal">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (event of page().items; track event.id) {
+                <tr
+                  [attr.data-event-id]="event.id"
+                  class="border-t border-stone-100 dark:border-white/10">
+                  <td class="p-4">
+                    <p class="font-medium">{{ event.animal.name || 'Sin nombre' }}</p>
+                    <p class="mt-1 text-xs text-stone-500">
+                      {{ event.animal.siniiga || 'Sin SINIIGA' }}
+                    </p>
+                  </td>
+                  <td class="whitespace-nowrap p-4">
+                    {{ event.date | date: 'dd/MM/yyyy' : 'UTC' }}
+                  </td>
+                  <td class="p-4">
+                    @if (event.male) {
+                      {{ label(event.male) }}
+                    }
+                    @if (event.kind === 'mating') {
+                      @if (event.kinship; as check) {
+                        <div class="mt-5">
+                          <app-kinship-notice [value]="check" [historical]="true" />
+                        </div>
+                      } @else {
+                        <p class="mt-5 text-xs text-stone-500">
+                          Esta monta no tiene una comprobación de parentesco guardada.
+                        </p>
+                      }
+                    }
+                    @if (event.result) {
+                      {{ resultLabel(event.result) }}
+                    }
+                    @if (event.birth_type) {
+                      {{ resultLabel(event.birth_type) }} · {{ event.offspring.length }} crías
+                    }
+                  </td>
+                  <td class="p-4">
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        (click)="detail.set(event)"
+                        [attr.aria-label]="'Ver registro de ' + label(event.animal)"
+                        class="rounded-lg px-3 py-2 text-green-900 hover:bg-stone-100 dark:text-green-300 dark:hover:bg-white/5">
+                        Ver</button
+                      ><button
+                        type="button"
+                        (click)="openHistory(event.animal)"
+                        [attr.aria-label]="'Historial reproductivo de ' + label(event.animal)"
+                        class="rounded-lg p-2 text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5">
+                        <lucide-icon [img]="clock" [size]="18" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="p-12 text-center text-stone-500">
+                    No hay registros para estos filtros.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-500">
+          <p>{{ page().total }} registros</p>
+          <div class="flex gap-3">
+            <button
+              type="button"
+              [disabled]="page().offset === 0"
+              (click)="load(page().offset - 25)"
+              class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
+              Anterior</button
+            ><button
+              type="button"
+              [disabled]="page().offset + 25 >= page().total"
+              (click)="load(page().offset + 25)"
+              class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      }
     }
-  }
-</div>
+  </div>
+}
 @if (formOpen()) {
   <app-modal [title]="kindLabel(formKind())" [busy]="busy()" (dismiss)="closeForm()"
     ><form [formGroup]="form" (ngSubmit)="save()">
@@ -480,7 +492,7 @@
   </app-modal>
 }
 @if (historyOpen()) {
-  <app-modal title="Historial reproductivo" (dismiss)="closeHistory()">
+  <app-detail-page title="Historial reproductivo" (dismiss)="closeHistory()">
     @if (historyLoading()) {
       <p role="status" class="py-10 text-sm text-stone-500">Cargando historial…</p>
     }
@@ -526,5 +538,5 @@
         }
       </ol>
     }
-  </app-modal>
+  </app-detail-page>
 }

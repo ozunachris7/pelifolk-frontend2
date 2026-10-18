@@ -148,13 +148,17 @@ describe('Reproductive performance', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('app-modal')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, app-modal')?.textContent;
       })
       .toContain('Nació viva');
-    expect(f.nativeElement.querySelector('app-modal').textContent).toContain('Estado actual:');
+    expect(f.nativeElement.querySelector('app-detail-page, app-modal').textContent).toContain(
+      'Estado actual:',
+    );
     expect(f.nativeElement.querySelector('[data-child-weaning]').textContent).toContain('18.50 kg');
     expect(f.nativeElement.querySelector('[data-child-weaning]').textContent).toContain('61 días');
-    expect(f.nativeElement.querySelector('app-modal').textContent).not.toContain('Ver genealogía');
+    expect(f.nativeElement.querySelector('app-detail-page, app-modal').textContent).not.toContain(
+      'Ver genealogía',
+    );
   });
   it('keeps missing weanings distinct from zero weight', async () => {
     const f = await fixture(),
@@ -212,10 +216,10 @@ describe('Reproductive performance', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('app-modal')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, app-modal')?.textContent;
       })
       .toContain('Edad al registrar: Desconocida');
-    expect(f.nativeElement.querySelector('app-modal').textContent).toContain(
+    expect(f.nativeElement.querySelector('app-detail-page, app-modal').textContent).toContain(
       'Sin destete registrado.',
     );
   });

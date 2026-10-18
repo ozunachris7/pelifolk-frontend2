@@ -83,7 +83,7 @@ describe('Animal incidents', () => {
     await expect
       .poll(() => {
         g.detectChanges();
-        return g.nativeElement.querySelector('dialog')?.textContent;
+        return g.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain(row.description);
     expect(g.nativeElement.querySelector('[data-new-followup]')).toBeNull();
@@ -106,7 +106,7 @@ describe('Animal incidents', () => {
     fill(f, 'incident-date', '2024-01-04');
     fill(f, 'incident-description', '  Reporte observado  ');
     f.nativeElement
-      .querySelector('dialog form')
+      .querySelector('app-detail-page form, dialog form')
       .dispatchEvent(new Event('submit', { cancelable: true }));
     f.detectChanges();
     const req = h.expectOne((r) => r.url.endsWith('/health/incidents') && r.method === 'POST');
@@ -125,7 +125,7 @@ describe('Animal incidents', () => {
         f.detectChanges();
         h.match((r) => r.url.endsWith('/health/incidents')).forEach((r) => r.flush(page([row])));
         h.match((r) => r.url.endsWith('/incidents/i1')).forEach((r) => r.flush(detail()));
-        return f.nativeElement.querySelector('dialog')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('Reporte original');
   });
@@ -153,7 +153,7 @@ describe('Animal incidents', () => {
     fill(f, 'incident-follow-status', 'closed');
     fill(f, 'incident-follow-notes', 'Se concluyó el seguimiento.');
     f.nativeElement
-      .querySelector('dialog form')
+      .querySelector('app-detail-page form, dialog form')
       .dispatchEvent(new Event('submit', { cancelable: true }));
     f.detectChanges();
     const req = h.expectOne((r) => r.url.endsWith('/incidents/i1/followups'));
@@ -177,7 +177,9 @@ describe('Animal incidents', () => {
     expect(f.nativeElement.querySelector('#incident-follow-notes').value).toBe(
       'Se concluyó el seguimiento.',
     );
-    expect(f.nativeElement.querySelector('dialog').textContent).toContain(row.description);
+    expect(f.nativeElement.querySelector('app-detail-page, dialog').textContent).toContain(
+      row.description,
+    );
   });
   it('reopens a closed incident with a new note while retaining prior follow-ups', async () => {
     const { f, h } = open();
@@ -217,7 +219,7 @@ describe('Animal incidents', () => {
     fill(f, 'incident-follow-date', '2024-01-06');
     fill(f, 'incident-follow-notes', 'Se reabre para completar el seguimiento.');
     f.nativeElement
-      .querySelector('dialog form')
+      .querySelector('app-detail-page form, dialog form')
       .dispatchEvent(new Event('submit', { cancelable: true }));
     f.detectChanges();
     const req = h.expectOne((r) => r.url.endsWith('/incidents/i1/followups'));
@@ -251,7 +253,9 @@ describe('Animal incidents', () => {
         return f.nativeElement.querySelectorAll('[data-incident-followup]').length;
       })
       .toBe(2);
-    expect(f.nativeElement.querySelector('dialog').textContent).toContain('Cierre anterior.');
+    expect(f.nativeElement.querySelector('app-detail-page, dialog').textContent).toContain(
+      'Cierre anterior.',
+    );
   });
   it('drops case selection and ignores old case options when the animal changes', async () => {
     const { f, h } = open();

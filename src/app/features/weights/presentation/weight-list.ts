@@ -1,3 +1,5 @@
+import { InteractiveChart } from '../../../shared/ui/chart/chart';
+import { weightChartModel } from './weight-chart-model';
 import { ManagementNav } from './management-nav';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -14,11 +16,18 @@ import {
   WeightPage,
   animalLabel,
   measurements,
-  plot,
 } from '../domain/weights';
 @Component({
   selector: 'app-weight-list',
-  imports: [ReactiveFormsModule, DatePipe, DecimalPipe, LucideAngularModule, Modal, ManagementNav],
+  imports: [
+    InteractiveChart,
+    ReactiveFormsModule,
+    DatePipe,
+    DecimalPipe,
+    LucideAngularModule,
+    Modal,
+    ManagementNav,
+  ],
   templateUrl: './weight-list.html',
 })
 export class WeightList implements OnInit, OnDestroy {
@@ -46,7 +55,7 @@ export class WeightList implements OnInit, OnDestroy {
   protected readonly historyError = signal('');
   protected readonly history = signal<WeightHistory | null>(null);
   protected readonly rows = computed(() => measurements(this.history()?.items ?? []));
-  protected readonly chart = computed(() => plot(this.history()?.items ?? []));
+  protected readonly graph = computed(() => weightChartModel(this.history()?.items ?? []));
   protected readonly label = animalLabel;
   protected readonly plus = Plus;
   protected readonly chartIcon = ChartNoAxesCombined;

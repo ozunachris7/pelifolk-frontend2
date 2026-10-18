@@ -94,10 +94,10 @@ describe('Attributed animal result', () => {
     await expect
       .poll(() => {
         f.detectChanges();
-        return f.nativeElement.querySelector('dialog')?.textContent;
+        return f.nativeElement.querySelector('app-detail-page, dialog')?.textContent;
       })
       .toContain('Ingreso vinculado');
-    expect(f.nativeElement.querySelector('dialog').textContent).toContain(
+    expect(f.nativeElement.querySelector('app-detail-page, dialog').textContent).toContain(
       'fuera de la suma anterior',
     );
   });
@@ -137,16 +137,35 @@ describe('Attributed animal result', () => {
   it('queries the selected ID and announces no financial activity', async () => {
     const f = await fixture();
     (f.componentInstance as any).chooseAnimal(row.animal);
-    f.nativeElement.querySelector('form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true}));
-    const req=http.expectOne(r=>r.url.endsWith('/profitability') && r.params.get('animal_id')==='a1');
+    f.nativeElement
+      .querySelector('form')
+      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const req = http.expectOne(
+      (r) => r.url.endsWith('/profitability') && r.params.get('animal_id') === 'a1',
+    );
     expect(req.request.params.has('q')).toBe(false);
-    req.flush({...page, activity:{income_count:0,expense_count:0},items:[{...row,income_count:0,expense_count:0}]});
-    await expect.poll(()=>{f.detectChanges();return f.nativeElement.textContent;}).toContain('No hay ingresos ni gastos atribuidos');
+    req.flush({
+      ...page,
+      activity: { income_count: 0, expense_count: 0 },
+      items: [{ ...row, income_count: 0, expense_count: 0 }],
+    });
+    await expect
+      .poll(() => {
+        f.detectChanges();
+        return f.nativeElement.textContent;
+      })
+      .toContain('No hay ingresos ni gastos atribuidos');
   });
   it('announces an empty filtered list', async () => {
-    const f=TestBed.createComponent(Profitability); f.detectChanges();
-    http.expectOne(r=>r.url.endsWith('/profitability')).flush({...page,total:0,items:[]});
-    await expect.poll(()=>{f.detectChanges();return f.nativeElement.textContent;}).toContain('No hay animales con los filtros seleccionados');
+    const f = TestBed.createComponent(Profitability);
+    f.detectChanges();
+    http.expectOne((r) => r.url.endsWith('/profitability')).flush({ ...page, total: 0, items: [] });
+    await expect
+      .poll(() => {
+        f.detectChanges();
+        return f.nativeElement.textContent;
+      })
+      .toContain('No hay animales con los filtros seleccionados');
   });
   it('denies reading without permission', () => {
     permissions = [];

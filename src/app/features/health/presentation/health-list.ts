@@ -1,3 +1,4 @@
+import { DetailPage } from '../../../shared/ui/detail-page/detail-page';
 import { IncidentSummary } from './incident-summary';
 import { ReactionSummary } from './reaction-summary';
 import { TreatmentDoses } from './treatment-doses';
@@ -34,6 +35,7 @@ import {
 @Component({
   selector: 'app-health-list',
   imports: [
+    DetailPage,
     IncidentSummary,
     ReactionSummary,
     ReactiveFormsModule,

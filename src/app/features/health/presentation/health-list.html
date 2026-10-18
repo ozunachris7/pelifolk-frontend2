@@ -1,253 +1,257 @@
-<div class="mx-auto max-w-6xl">
-  <div class="flex flex-wrap items-end justify-between gap-5 pb-7">
-    <div>
-      <p class="mb-3 text-xs text-stone-500">Mi rancho / Sanidad</p>
-      <h1 class="text-2xl font-medium tracking-tight sm:text-3xl">Sanidad</h1>
-      <p class="mt-3 text-sm text-stone-500">Observaciones y seguimiento de los casos del hato.</p>
-    </div>
-    @if (canObserve() || canCases()) {
-      <div class="flex flex-wrap gap-2">
-        @if (canObserve()) {
-          <button
-            type="button"
-            data-testid="new-observation"
-            (click)="openForm('observation')"
-            class="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-4 py-3 text-xs dark:border-white/15">
-            <lucide-icon [img]="plus" [size]="16" /> Observación
-          </button>
-        }
-        @if (canCases()) {
-          <button
-            type="button"
-            data-testid="new-case"
-            (click)="openForm('case')"
-            class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950 inline-flex items-center gap-2">
-            <lucide-icon [img]="plus" [size]="16" /> Abrir caso
-          </button>
-        }
+@if (!(detailOpen() || historyOpen())) {
+  <div class="mx-auto max-w-6xl">
+    <div class="flex flex-wrap items-end justify-between gap-5 pb-7">
+      <div>
+        <p class="mb-3 text-xs text-stone-500">Mi rancho / Sanidad</p>
+        <h1 class="text-2xl font-medium tracking-tight sm:text-3xl">Sanidad</h1>
+        <p class="mt-3 text-sm text-stone-500">
+          Observaciones y seguimiento de los casos del hato.
+        </p>
       </div>
-    }
-  </div>
-  <app-health-nav />
-  @if (success()) {
-    <p
-      role="status"
-      class="mb-5 rounded-lg bg-green-50 p-4 text-sm text-green-900 dark:bg-green-950/30 dark:text-green-200">
-      {{ success() }}
-    </p>
-  }
-  @if (!canRead()) {
-    <p class="py-10 text-sm text-stone-500">No tienes permiso para consultar Sanidad.</p>
-  } @else {
-    <div class="mb-6 flex gap-5 border-b border-stone-200 text-sm dark:border-white/10">
-      <button
-        type="button"
-        data-testid="cases-tab"
-        (click)="switchTab('cases')"
-        [attr.aria-pressed]="tab() === 'cases'"
-        [class.border-green-800]="tab() === 'cases'"
-        class="border-b-2 border-transparent py-3">
-        Casos sanitarios</button
-      ><button
-        type="button"
-        data-testid="observations-tab"
-        (click)="switchTab('observations')"
-        [attr.aria-pressed]="tab() === 'observations'"
-        [class.border-green-800]="tab() === 'observations'"
-        class="border-b-2 border-transparent py-3">
-        Observaciones
-      </button>
-    </div>
-    <form (submit)="$event.preventDefault(); load()" class="mb-6 flex flex-wrap items-end gap-3">
-      <div class="min-w-0 max-w-md flex-1 basis-52">
-        <label for="health-search" class="mb-2 block text-xs">Buscar animal</label
-        ><input
-          id="health-search"
-          type="search"
-          placeholder="Nombre o SINIIGA"
-          [value]="search()"
-          (input)="search.set($any($event.target).value)"
-          class="w-full rounded-lg border border-stone-200 bg-white px-3 py-3 text-sm dark:border-white/15 dark:bg-[#171717]" />
-      </div>
-      @if (tab() === 'cases') {
-        <div>
-          <label for="case-status-filter" class="mb-2 block text-xs">Estado</label
-          ><select
-            id="case-status-filter"
-            [value]="status()"
-            (change)="status.set($any($event.target).value); load()"
-            class="w-full rounded-lg border border-stone-200 bg-white px-3 py-3 text-sm dark:border-white/15 dark:bg-[#171717]">
-            <option value="">Todos</option>
-            <option value="open">Abiertos</option>
-            <option value="under_treatment">En tratamiento</option>
-            <option value="closed">Cerrados</option>
-          </select>
+      @if (canObserve() || canCases()) {
+        <div class="flex flex-wrap gap-2">
+          @if (canObserve()) {
+            <button
+              type="button"
+              data-testid="new-observation"
+              (click)="openForm('observation')"
+              class="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-4 py-3 text-xs dark:border-white/15">
+              <lucide-icon [img]="plus" [size]="16" /> Observación
+            </button>
+          }
+          @if (canCases()) {
+            <button
+              type="button"
+              data-testid="new-case"
+              (click)="openForm('case')"
+              class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950 inline-flex items-center gap-2">
+              <lucide-icon [img]="plus" [size]="16" /> Abrir caso
+            </button>
+          }
         </div>
       }
-      <button
-        type="submit"
-        class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950"
-        [disabled]="loading()">
-        Buscar
-      </button>
-    </form>
-    @if (error()) {
-      <p role="alert" class="mb-3 text-sm text-red-600">{{ error() }}</p>
-      <button type="button" (click)="load(page().offset)" class="text-sm underline">
-        Reintentar
-      </button>
+    </div>
+    <app-health-nav />
+    @if (success()) {
+      <p
+        role="status"
+        class="mb-5 rounded-lg bg-green-50 p-4 text-sm text-green-900 dark:bg-green-950/30 dark:text-green-200">
+        {{ success() }}
+      </p>
     }
-    @if (loading()) {
-      <p role="status" class="py-12 text-sm text-stone-500">Cargando registros…</p>
-    } @else if (!error()) {
-      <div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-white/10">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-stone-50 text-xs text-stone-500 dark:bg-white/5">
-            <tr>
-              <th class="p-4 font-normal">Animal</th>
-              <th class="p-4 font-normal">
-                {{ tab() === 'cases' ? 'Motivo' : 'Observación' }}
-              </th>
-              <th class="p-4 font-normal">Fecha</th>
-              <th class="p-4 font-normal">
-                {{ tab() === 'cases' ? 'Estado' : 'Registró' }}
-              </th>
-              <th class="p-4 font-normal">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (tab() === 'cases') {
-              @for (case of cases().items; track case.id) {
-                <tr
-                  [attr.data-case-id]="case.id"
-                  class="border-t border-stone-100 dark:border-white/10">
-                  <td class="p-4">
-                    <button
-                      type="button"
-                      (click)="openDetail(case.id)"
-                      class="text-left font-medium underline underline-offset-4"
-                      [attr.aria-label]="'Ver caso de ' + label(case.animal)">
-                      {{ case.animal.name || 'Sin nombre' }}
-                    </button>
-                    <p class="mt-1 text-xs text-stone-500">
-                      {{ case.animal.siniiga || 'Sin SINIIGA' }}
-                    </p>
-                  </td>
-                  <td class="max-w-xs break-words p-4">{{ case.reason }}</td>
-                  <td class="whitespace-nowrap p-4">
-                    {{ case.start_date | date: 'dd/MM/yyyy' : 'UTC' }}
-                  </td>
-                  <td class="whitespace-nowrap p-4">
-                    <span class="rounded-md bg-stone-100 px-2 py-1 text-xs dark:bg-white/5">{{
-                      statusLabel(case.status)
-                    }}</span>
-                  </td>
-                  <td class="p-4">
-                    <div class="flex gap-1">
+    @if (!canRead()) {
+      <p class="py-10 text-sm text-stone-500">No tienes permiso para consultar Sanidad.</p>
+    } @else {
+      <div class="mb-6 flex gap-5 border-b border-stone-200 text-sm dark:border-white/10">
+        <button
+          type="button"
+          data-testid="cases-tab"
+          (click)="switchTab('cases')"
+          [attr.aria-pressed]="tab() === 'cases'"
+          [class.border-green-800]="tab() === 'cases'"
+          class="border-b-2 border-transparent py-3">
+          Casos sanitarios</button
+        ><button
+          type="button"
+          data-testid="observations-tab"
+          (click)="switchTab('observations')"
+          [attr.aria-pressed]="tab() === 'observations'"
+          [class.border-green-800]="tab() === 'observations'"
+          class="border-b-2 border-transparent py-3">
+          Observaciones
+        </button>
+      </div>
+      <form (submit)="$event.preventDefault(); load()" class="mb-6 flex flex-wrap items-end gap-3">
+        <div class="min-w-0 max-w-md flex-1 basis-52">
+          <label for="health-search" class="mb-2 block text-xs">Buscar animal</label
+          ><input
+            id="health-search"
+            type="search"
+            placeholder="Nombre o SINIIGA"
+            [value]="search()"
+            (input)="search.set($any($event.target).value)"
+            class="w-full rounded-lg border border-stone-200 bg-white px-3 py-3 text-sm dark:border-white/15 dark:bg-[#171717]" />
+        </div>
+        @if (tab() === 'cases') {
+          <div>
+            <label for="case-status-filter" class="mb-2 block text-xs">Estado</label
+            ><select
+              id="case-status-filter"
+              [value]="status()"
+              (change)="status.set($any($event.target).value); load()"
+              class="w-full rounded-lg border border-stone-200 bg-white px-3 py-3 text-sm dark:border-white/15 dark:bg-[#171717]">
+              <option value="">Todos</option>
+              <option value="open">Abiertos</option>
+              <option value="under_treatment">En tratamiento</option>
+              <option value="closed">Cerrados</option>
+            </select>
+          </div>
+        }
+        <button
+          type="submit"
+          class="rounded-lg bg-green-900 px-4 py-3 text-xs font-medium text-white disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950"
+          [disabled]="loading()">
+          Buscar
+        </button>
+      </form>
+      @if (error()) {
+        <p role="alert" class="mb-3 text-sm text-red-600">{{ error() }}</p>
+        <button type="button" (click)="load(page().offset)" class="text-sm underline">
+          Reintentar
+        </button>
+      }
+      @if (loading()) {
+        <p role="status" class="py-12 text-sm text-stone-500">Cargando registros…</p>
+      } @else if (!error()) {
+        <div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-white/10">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-stone-50 text-xs text-stone-500 dark:bg-white/5">
+              <tr>
+                <th class="p-4 font-normal">Animal</th>
+                <th class="p-4 font-normal">
+                  {{ tab() === 'cases' ? 'Motivo' : 'Observación' }}
+                </th>
+                <th class="p-4 font-normal">Fecha</th>
+                <th class="p-4 font-normal">
+                  {{ tab() === 'cases' ? 'Estado' : 'Registró' }}
+                </th>
+                <th class="p-4 font-normal">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (tab() === 'cases') {
+                @for (case of cases().items; track case.id) {
+                  <tr
+                    [attr.data-case-id]="case.id"
+                    class="border-t border-stone-100 dark:border-white/10">
+                    <td class="p-4">
                       <button
                         type="button"
                         (click)="openDetail(case.id)"
-                        [attr.aria-label]="'Ver caso de ' + label(case.animal)"
-                        class="inline-flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium hover:bg-stone-100 dark:hover:bg-white/5">
-                        <lucide-icon [img]="clipboard" [size]="18" aria-hidden="true" />
-                        Ver caso</button
-                      ><button
+                        class="text-left font-medium underline underline-offset-4"
+                        [attr.aria-label]="'Ver caso de ' + label(case.animal)">
+                        {{ case.animal.name || 'Sin nombre' }}
+                      </button>
+                      <p class="mt-1 text-xs text-stone-500">
+                        {{ case.animal.siniiga || 'Sin SINIIGA' }}
+                      </p>
+                    </td>
+                    <td class="max-w-xs break-words p-4">{{ case.reason }}</td>
+                    <td class="whitespace-nowrap p-4">
+                      {{ case.start_date | date: 'dd/MM/yyyy' : 'UTC' }}
+                    </td>
+                    <td class="whitespace-nowrap p-4">
+                      <span class="rounded-md bg-stone-100 px-2 py-1 text-xs dark:bg-white/5">{{
+                        statusLabel(case.status)
+                      }}</span>
+                    </td>
+                    <td class="p-4">
+                      <div class="flex gap-1">
+                        <button
+                          type="button"
+                          (click)="openDetail(case.id)"
+                          [attr.aria-label]="'Ver caso de ' + label(case.animal)"
+                          class="inline-flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium hover:bg-stone-100 dark:hover:bg-white/5">
+                          <lucide-icon [img]="clipboard" [size]="18" aria-hidden="true" />
+                          Ver caso</button
+                        ><button
+                          type="button"
+                          (click)="openHistory(case.animal)"
+                          [attr.aria-label]="'Historial sanitario de ' + label(case.animal)"
+                          class="rounded-lg p-2 text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5">
+                          <lucide-icon [img]="historyIcon" [size]="18" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="p-12 text-center text-stone-500">
+                      No hay casos sanitarios para estos filtros.
+                    </td>
+                  </tr>
+                }
+              } @else {
+                @for (observation of observations().items; track observation.id) {
+                  <tr
+                    [attr.data-observation-id]="observation.id"
+                    class="border-t border-stone-100 dark:border-white/10">
+                    <td class="p-4">
+                      <p class="font-medium">
+                        {{ observation.animal.name || 'Sin nombre' }}
+                      </p>
+                      <p class="mt-1 text-xs text-stone-500">
+                        {{ observation.animal.siniiga || 'Sin SINIIGA' }}
+                      </p>
+                    </td>
+                    <td class="max-w-sm p-4">
+                      <p class="line-clamp-3 break-words whitespace-pre-wrap">
+                        {{ observation.observation }}
+                      </p>
+                    </td>
+                    <td class="whitespace-nowrap p-4">
+                      {{ observation.date | date: 'dd/MM/yyyy' : 'UTC' }}
+                    </td>
+                    <td class="p-4 text-stone-500">{{ observation.recorded_by }}</td>
+                    <td class="p-4">
+                      @if (observation.health_case; as linked) {
+                        <button
+                          type="button"
+                          (click)="openDetail(linked.id)"
+                          class="mr-2 inline-flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs dark:border-white/15">
+                          <lucide-icon [img]="clipboard" [size]="15" />Ver caso
+                        </button>
+                      } @else if (canCases()) {
+                        <button
+                          type="button"
+                          (click)="sourceObservation.set(observation)"
+                          data-attend-observation
+                          class="mr-2 inline-flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs dark:border-white/15">
+                          <lucide-icon [img]="clipboard" [size]="15" />Atender hallazgo
+                        </button>
+                      }
+                      <button
                         type="button"
-                        (click)="openHistory(case.animal)"
-                        [attr.aria-label]="'Historial sanitario de ' + label(case.animal)"
-                        class="rounded-lg p-2 text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5">
+                        (click)="openHistory(observation.animal)"
+                        [attr.aria-label]="'Historial sanitario de ' + label(observation.animal)"
+                        class="rounded-lg p-2 text-green-900 hover:bg-stone-100 dark:text-green-300 dark:hover:bg-white/5">
                         <lucide-icon [img]="historyIcon" [size]="18" />
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="5" class="p-12 text-center text-stone-500">
-                    No hay casos sanitarios para estos filtros.
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="p-12 text-center text-stone-500">
+                      No hay observaciones para estos filtros.
+                    </td>
+                  </tr>
+                }
               }
-            } @else {
-              @for (observation of observations().items; track observation.id) {
-                <tr
-                  [attr.data-observation-id]="observation.id"
-                  class="border-t border-stone-100 dark:border-white/10">
-                  <td class="p-4">
-                    <p class="font-medium">
-                      {{ observation.animal.name || 'Sin nombre' }}
-                    </p>
-                    <p class="mt-1 text-xs text-stone-500">
-                      {{ observation.animal.siniiga || 'Sin SINIIGA' }}
-                    </p>
-                  </td>
-                  <td class="max-w-sm p-4">
-                    <p class="line-clamp-3 break-words whitespace-pre-wrap">
-                      {{ observation.observation }}
-                    </p>
-                  </td>
-                  <td class="whitespace-nowrap p-4">
-                    {{ observation.date | date: 'dd/MM/yyyy' : 'UTC' }}
-                  </td>
-                  <td class="p-4 text-stone-500">{{ observation.recorded_by }}</td>
-                  <td class="p-4">
-                    @if (observation.health_case; as linked) {
-                      <button
-                        type="button"
-                        (click)="openDetail(linked.id)"
-                        class="mr-2 inline-flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs dark:border-white/15">
-                        <lucide-icon [img]="clipboard" [size]="15" />Ver caso
-                      </button>
-                    } @else if (canCases()) {
-                      <button
-                        type="button"
-                        (click)="sourceObservation.set(observation)"
-                        data-attend-observation
-                        class="mr-2 inline-flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs dark:border-white/15">
-                        <lucide-icon [img]="clipboard" [size]="15" />Atender hallazgo
-                      </button>
-                    }
-                    <button
-                      type="button"
-                      (click)="openHistory(observation.animal)"
-                      [attr.aria-label]="'Historial sanitario de ' + label(observation.animal)"
-                      class="rounded-lg p-2 text-green-900 hover:bg-stone-100 dark:text-green-300 dark:hover:bg-white/5">
-                      <lucide-icon [img]="historyIcon" [size]="18" />
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="5" class="p-12 text-center text-stone-500">
-                    No hay observaciones para estos filtros.
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
-      <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-500">
-        <p>{{ page().total }} registros</p>
-        <div class="flex gap-3">
-          <button
-            type="button"
-            [disabled]="page().offset === 0"
-            (click)="load(page().offset - 25)"
-            class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
-            Anterior</button
-          ><button
-            type="button"
-            [disabled]="page().offset + 25 >= page().total"
-            (click)="load(page().offset + 25)"
-            class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
-            Siguiente
-          </button>
+            </tbody>
+          </table>
         </div>
-      </div>
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-500">
+          <p>{{ page().total }} registros</p>
+          <div class="flex gap-3">
+            <button
+              type="button"
+              [disabled]="page().offset === 0"
+              (click)="load(page().offset - 25)"
+              class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
+              Anterior</button
+            ><button
+              type="button"
+              [disabled]="page().offset + 25 >= page().total"
+              (click)="load(page().offset + 25)"
+              class="rounded-lg border border-stone-200 px-3 py-2 disabled:opacity-40 dark:border-white/10">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      }
     }
-  }
-</div>
+  </div>
+}
 @if (formKind(); as kind) {
   <app-modal
     [title]="kind === 'case' ? 'Abrir caso sanitario' : 'Registrar observación'"
@@ -348,7 +352,7 @@
   >
 }
 @if (detailOpen()) {
-  <app-modal title="Caso sanitario" [busy]="busy()" (dismiss)="closeDetail()">
+  <app-detail-page title="Caso sanitario" [busy]="busy()" (dismiss)="closeDetail()">
     @if (detailLoading()) {
       <p role="status" class="py-10 text-sm text-stone-500">Cargando caso…</p>
     }
@@ -766,10 +770,10 @@
         }
       </ol>
     }
-  </app-modal>
+  </app-detail-page>
 }
 @if (historyOpen()) {
-  <app-modal title="Historial sanitario" (dismiss)="closeHistory()">
+  <app-detail-page title="Historial sanitario" (dismiss)="closeHistory()">
     @if (historyLoading()) {
       <p role="status" class="py-10 text-sm text-stone-500">Cargando historial…</p>
     }
@@ -871,7 +875,7 @@
         }
       </ol>
     }
-  </app-modal>
+  </app-detail-page>
 }
 
 @if (sourceObservation(); as source) {
